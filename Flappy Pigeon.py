@@ -167,7 +167,7 @@ def create_settings_field_update_key_page(page_name, choices_func, field_name, c
             callback(new_key)
             print(f'{field_name} has been updated to \'{new_key}\'')
             time.sleep(1.5)
-            print('Press \'enter\' to continue...')
+            input('Press \'enter\' to continue...')
             break
     
     return wrapper
@@ -270,7 +270,7 @@ def generate_start_bird_pos(width, height):
     return bird_x, bird_y
 
 def generate_pipe(width, height, pipe_gap):
-    return (width, random.randint(0, height - pipe_gap + 1))
+    return (width, random.randint(0, height - pipe_gap))
 
 def bird_touched_pipe(pipes, pipe_gap, bird_x, bird_y):
     return any(pipe_x <= bird_x < pipe_x + 2 and (bird_y < pipe_y or bird_y > pipe_y + pipe_gap) for pipe_x, pipe_y in pipes)
@@ -320,7 +320,7 @@ def game_loop():
             if keyboard.is_pressed(jump_key):
                 speed = min(1.2, speed + boost)
 
-            bird_y = min(height, bird_y - round(speed))
+            bird_y = max(0, min(height + 1, bird_y - round(speed)))
 
             if bird_touched_pipe(pipes, pipe_gap, bird_x, bird_y):
                 print("Game Over!")
@@ -328,7 +328,7 @@ def game_loop():
                 input('Press \'enter\' to continue...')
                 break
 
-            if bird_y > height:
+            if bird_y >= height:
                 print("Game Over!")
                 time.sleep(1.5)
                 input('Press \'enter\' to continue...')
@@ -401,7 +401,7 @@ def update_value(field_name, value):
 
 def update_height(height):
     SETTINGS['height'] = height
-    pipe_gap = max(3, min(6, height // 2))
+    pipe_gap = max(4, min(6, height // 2))
     SETTINGS['pipe_gap'] = pipe_gap
     update_settings(SETTINGS)
 
